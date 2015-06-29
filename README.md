@@ -1,2 +1,2 @@
-# sensors_noveau
-sensors_noveau is a lightweight reminder of your CPU cooler's inadequacy.
+# sensors_nouveau
+sensors_nouveau is a lightweight reminder of your CPU cooler's inadequacy.
