@@ -68,7 +68,6 @@ def updatewindow(window):
 	for chip in chips:
 		itc = store.iter_children(it)
 		for feature in chip:
-                        print it
 			store.set(itc, 1, str(feature.get_value()))
 			itc = store.iter_next(itc)
                 it = store.iter_next(it)
