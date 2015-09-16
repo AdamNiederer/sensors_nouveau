@@ -8,7 +8,6 @@
 ### 
 
 import signal
-
 import sensors
 import gtk
 import appindicator
@@ -38,7 +37,7 @@ def buildwindow():
 	prefswindow.set_position(gtk.WIN_POS_CENTER)
 	prefswindow.set_resizable(False)
 	prefswindow.set_border_width(10)
- 	prefswindow.connect('delete-event', hide_window)
+ 	prefswindow.connect('delete-event', hide)
 	tree = gtk.TreeView()
 	tree.set_name("tree")
 	store = gtk.TreeStore(str, str)
@@ -100,7 +99,7 @@ def update(_):
 		chips.append(chip)
 	return True
 		
-def hide_window(window, event):
+def hide(window, event):
 	window.hide()
 	return True
 
