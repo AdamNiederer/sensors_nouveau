@@ -2,14 +2,12 @@
 # -*- coding: utf-8 -*-
 
 ###
-### sensor_noveau.py
+### sensor_nouveau.py
 ### Copyright 2015 Adam Niederer
 ### License: GPLv2+
 ### 
 
 import signal
-import json
-import random
 
 import sensors
 import gtk
@@ -33,11 +31,13 @@ def buildmenu():
 
 def buildwindow():
     prefswindow = gtk.Window(gtk.WINDOW_TOPLEVEL)
+    prefswindow.set_size_request(250, 200)
     prefswindow.set_title('Preferences')
     prefswindow.set_position(gtk.WIN_POS_CENTER)
     prefswindow.set_resizable(False)
     prefswindow.set_border_width(10)
     tree = gtk.TreeView()
+    tree.set_name("tree")
     store = gtk.TreeStore(str, str)
     column_name = gtk.TreeViewColumn('Sensor')
     render_name = gtk.CellRendererText()
@@ -57,7 +57,9 @@ def buildwindow():
 
     tree.set_model(store)
     prefswindow.add(tree)
+ 	prefswindow.connect('delete-event', hide_window)
     return prefswindow
+
 
 # GTK-Bound Methods:
 
@@ -74,15 +76,15 @@ def update(_):
     chips = []
     for chip in sensors.iter_detected_chips():
         chips.append(chip)
-        for feature in chip:
-            print feature.get_value()
     return True
-        
-# Main()
+
+  def hide_window(window, event):
+    window.hide()
+    return True
 
 chips = []
 selected = None 
-indicator = appindicator.Indicator('sensor-noveau', 'kek.svg', appindicator.CATEGORY_HARDWARE)
+indicator = appindicator.Indicator('sensor-noveau', '/usr/share/unity/icons/panel-shadow.png', appindicator.CATEGORY_HARDWARE)
 indicator.set_status(appindicator.STATUS_ACTIVE)
 
 signal.signal(signal.SIGINT, signal.SIG_DFL)
