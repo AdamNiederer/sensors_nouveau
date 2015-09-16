@@ -64,12 +64,14 @@ def buildwindow():
 
 def updatewindow(window):
 	global selected
+        it = store.get_iter_first()
 	for chip in chips:
-		it = store.get_iter_first()
-		it = store.iter_children(it)
+		itc = store.iter_children(it)
 		for feature in chip:
-			store.set(it, 1, str(feature.get_value()))
-			it = store.iter_next(it)
+                        print it
+			store.set(itc, 1, str(feature.get_value()))
+			itc = store.iter_next(itc)
+                it = store.iter_next(it)
 	row = tree.get_selection()
 	if row != None:
 		srow = row.get_selected_rows()[1]
