@@ -1,9 +1,10 @@
-# sensors_nouveau
+#sensors_nouveau
 sensors_nouveau is a lightweight reminder of your CPU cooler's inadequacy.
 ##Dependencies
-`pysensors`, `libappindicator`, and `pygtk`
+`PyGObject` and `PySensors`
 ##Building
-`sudo pip install pysensors pygtk`
+`sudo apt-get install python-pip pygobject`
+`sudo pip install pysensors`
 
 `python ~/sensors_nouveau.py`
 ##Supported Platforms
