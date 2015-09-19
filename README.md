@@ -4,6 +4,7 @@ sensors_nouveau is a lightweight reminder of your CPU cooler's inadequacy.
 `PyGObject` and `PySensors`
 ##Building
 `sudo apt-get install python-pip pygobject`
+
 `sudo pip install pysensors`
 
 `python ~/sensors_nouveau.py`
