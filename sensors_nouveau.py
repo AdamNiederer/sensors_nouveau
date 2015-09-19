@@ -59,7 +59,36 @@ def buildwindow():
 			store.append(it, (feature.label, str(feature.get_value())))
 
 	tree.set_model(store)
-	prefswindow.add(tree)
+
+	stack = gtk.Stack()
+	stack.set_transition_type(gtk.StackTransitionType.SLIDE_LEFT_RIGHT)
+	stack.set_transition_duration(100)
+
+	stackvbox = gtk.VBox.new(False, 0)
+	prefsvbox = gtk.VBox.new(False, 0)
+	farhbox = gtk.HBox.new(False, 0)
+
+	farlabel = gtk.Label()
+	farlabel.set_markup("Display Fahrenheit");
+	farswitch = gtk.Switch()
+	farswitch.connect("notify::active", switch_far)
+	farswitch.set_active(False)
+	farhbox.pack_start(farlabel, False, True, 0)
+	farhbox.pack_end(farswitch, False, True, 0)
+
+	prefsvbox.pack_start(farhbox, False, True, 10)
+
+	stack.add_titled(tree, "temps", "Temperature Display")
+	stack.add_titled(prefsvbox, "prefs", "Preferences")
+
+	stackswitcher = gtk.StackSwitcher()
+	stackswitcher.set_stack(stack)
+
+	stackvbox.pack_start(stackswitcher, False, True, 0)
+	stackvbox.pack_start(stack, True, True, 0)
+
+	prefswindow.add(stackvbox)
+
 	return prefswindow
 
 def updatewindow(window):
@@ -82,6 +111,11 @@ def updatewindow(window):
 				i += 1
 	return True
 
+def tempconvert(t):
+	if deg == '°C':
+		return t
+	else:
+		return int((t * 1.8) + 32)
 
 # GTK-Bound Methods:
 
@@ -93,7 +127,7 @@ def quit(_):
 	sensors.cleanup()
 
 def update(_):
-	indicator.set_label(str(int(selected.get_value())) + '°C', '00°C')
+	indicator.set_label(str(tempconvert(int(selected.get_value()))) + deg, '00°C')
 	global chips
 	chips = []
 	for chip in sensors.iter_detected_chips():
@@ -104,9 +138,21 @@ def hide(window, event):
 	window.hide()
 	return True
 
+def switch_far(switch, args):
+	global deg
+	print switch
+	if switch.get_active():
+		deg = '°F'
+	else:
+		deg = '°C'
+
+
 # Main()
 
 global selected
+global deg
+
+deg = '°C'
 
 chips = []
 features = {}
