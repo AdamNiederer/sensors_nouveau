@@ -9,8 +9,9 @@
 
 import signal
 import sensors
-import gtk
-import appindicator
+from gi.repository import Gtk as gtk
+from gi.repository import AppIndicator3 as appindicator
+from gi.repository import GLib as glib
 
 def buildmenu():
 	menu = gtk.Menu()
@@ -31,10 +32,10 @@ def buildmenu():
 def buildwindow():
 	global store
 	global tree
-	prefswindow = gtk.Window(gtk.WINDOW_TOPLEVEL)
+	prefswindow = gtk.Window(gtk.WindowType.TOPLEVEL)
 	prefswindow.set_size_request(250, 200)
 	prefswindow.set_title('Preferences')
-	prefswindow.set_position(gtk.WIN_POS_CENTER)
+	prefswindow.set_position(gtk.WindowPosition.CENTER)
 	prefswindow.set_resizable(False)
 	prefswindow.set_border_width(10)
  	prefswindow.connect('delete-event', hide)
@@ -53,7 +54,7 @@ def buildwindow():
 	column_temp.add_attribute(render_temp, 'text', 1);
 
 	for chip in chips:
-		it = store.append(None, [chip, ''])
+		it = store.append(None, [str(chip), ''])
 		for feature in chip:
 			store.append(it, (feature.label, str(feature.get_value())))
 
@@ -92,7 +93,7 @@ def quit(_):
 	sensors.cleanup()
 
 def update(_):
-	indicator.set_label(str(int(selected.get_value())) + '°C')
+	indicator.set_label(str(int(selected.get_value())) + '°C', '00°C')
 	global chips
 	chips = []
 	for chip in sensors.iter_detected_chips():
@@ -110,8 +111,8 @@ global selected
 chips = []
 features = {}
 selected = None 
-indicator = appindicator.Indicator('sensor-nouveau', '/usr/share/unity/icons/panel-shadow.png', appindicator.CATEGORY_HARDWARE)
-indicator.set_status(appindicator.STATUS_ACTIVE)
+indicator = appindicator.Indicator.new('sensor-nouveau', '/usr/share/unity/icons/panel-shadow.png', appindicator.IndicatorCategory.HARDWARE)
+indicator.set_status(appindicator.IndicatorStatus.ACTIVE)
 
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 sensors.init()
@@ -126,6 +127,6 @@ menu = buildmenu()
 window = buildwindow()
 
 indicator.set_menu(menu)
-gtk.timeout_add(500, update, indicator)
-gtk.timeout_add(500, updatewindow, window)
+glib.timeout_add(500, update, indicator)
+glib.timeout_add(500, updatewindow, window)
 gtk.main()
