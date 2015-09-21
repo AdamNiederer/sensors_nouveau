@@ -65,8 +65,11 @@ def buildwindow():
 	stack.set_transition_duration(100)
 
 	stackvbox = gtk.VBox.new(False, 0)
-	prefsvbox = gtk.VBox.new(False, 0)
+	stackhbox = gtk.HBox.new(False, 0)
+	prefsvbox = gtk.VBox.new(False, 10)
 	farhbox = gtk.HBox.new(False, 0)
+	iconhbox = gtk.HBox.new(False, 0)
+	prefixhbox = gtk.HBox.new(False, 0)
 
 	farlabel = gtk.Label()
 	farlabel.set_markup("Display Fahrenheit");
@@ -76,16 +79,35 @@ def buildwindow():
 	farhbox.pack_start(farlabel, False, True, 0)
 	farhbox.pack_end(farswitch, False, True, 0)
 
-	prefsvbox.pack_start(farhbox, False, True, 10)
+	iconlabel = gtk.Label()
+	iconlabel.set_markup("Use Icon")
+	iconbrowse = gtk.Button.new_with_label("Browse...")
+	iconhbox.pack_start(iconlabel, False, False, 0)
+	iconhbox.pack_end(iconbrowse, False, False, 0)
+	iconbrowse.connect("clicked", iconupdate)
 
+	prefixlabel = gtk.Label()
+	prefixlabel.set_markup("Prefix")
+	prefixentry = gtk.Entry()
+	prefixentry.set_width_chars(8)
+	prefixentry.set_max_width_chars(8)
+	prefixentry.connect('changed', prefixupdate);
+	prefixhbox.pack_start(prefixlabel, False, False, 0)
+	prefixhbox.pack_end(prefixentry, False, False, 0)
+
+	prefsvbox.pack_start(farhbox, False, True, 0)
+	prefsvbox.pack_start(iconhbox, False, True, 0)
+	prefsvbox.pack_start(prefixhbox, False, True, 0)
 	stack.add_titled(tree, "temps", "Temperature Display")
 	stack.add_titled(prefsvbox, "prefs", "Preferences")
 
 	stackswitcher = gtk.StackSwitcher()
 	stackswitcher.set_stack(stack)
 
-	stackvbox.pack_start(stackswitcher, False, True, 0)
-	stackvbox.pack_start(stack, True, True, 0)
+	stackhbox.set_center_widget(stackswitcher)
+
+	stackvbox.pack_start(stackhbox, False, True, 0)
+	stackvbox.pack_start(stack, True, True, 5)
 
 	prefswindow.add(stackvbox)
 
@@ -127,31 +149,44 @@ def quit(_):
 	sensors.cleanup()
 
 def update(_):
-	indicator.set_label(str(tempconvert(int(selected.get_value()))) + deg, '00°C')
+	indicator.set_label(prefix + str(tempconvert(int(selected.get_value()))) + deg, '00°C')
 	global chips
 	chips = []
 	for chip in sensors.iter_detected_chips():
 		chips.append(chip)
 	return True
-		
+
 def hide(window, event):
 	window.hide()
 	return True
 
 def switch_far(switch, args):
 	global deg
-	print switch
 	if switch.get_active():
 		deg = '°F'
 	else:
 		deg = '°C'
 
+def prefixupdate(entry):
+	global prefix
+	prefix = entry.get_text()
+
+def iconupdate(button):
+	global indicator
+	iconchooser = gtk.FileChooserDialog("Select an icon", button.get_toplevel(), gtk.FileChooserAction.OPEN, ("Open", gtk.ResponseType.ACCEPT, "Cancel", gtk.ResponseType.CANCEL))
+	res = gtk.Dialog.run(iconchooser)
+	if res == gtk.ResponseType.ACCEPT:
+		indicator.set_icon_full(iconchooser.get_filename(), "Custom Sensor Icon");
+	iconchooser.destroy()
 
 # Main()
 
 global selected
 global deg
+global prefix
+global indicator
 
+prefix = ''
 deg = '°C'
 
 chips = []
